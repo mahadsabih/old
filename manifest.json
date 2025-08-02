@@ -5,5 +5,12 @@
   "main": "build/code.js",
   "ui": "ui.html",
   "editorType": ["figma"],
-  "permissions": []
+  "permissions": ["activeusers"],
+  "networkAccess": {
+    "allowedDomains": [
+     "*"
+    ],
+    "reasoning": "This plugin requires network access to fetch user data and perform authentication.",
+    "devAllowedDomains":["*"]
+  }
 }
