@@ -8,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
 function luminance(rgb) {
     const toLinear = (c) => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
     return (0.2126 * toLinear(rgb.r) +
@@ -32,7 +31,6 @@ function hexToRgb(hex) {
     const b = parseInt(hex.slice(5, 7), 16) / 255;
     return { r, g, b };
 }
-
 function isOverlapping(shape, text) {
     if (!("absoluteBoundingBox" in shape) || !("absoluteBoundingBox" in text)) {
         return false;
@@ -61,7 +59,6 @@ function findBackgroundShape(node, textNode) {
                 isOverlapping(child, textNode)) {
                 return child;
             }
-            
             if (child.type === "GROUP" || child.type === "FRAME") {
                 const found = findBackgroundShape(child, textNode);
                 if (found)
@@ -72,10 +69,9 @@ function findBackgroundShape(node, textNode) {
     return null;
 }
 function getBackgroundColor(textNode) {
-    
     const parent = textNode.parent;
     if (!parent)
-        return { r: 1, g: 1, b: 1 }; 
+        return { r: 1, g: 1, b: 1 };
     const overlappingBackground = findBackgroundShape(parent, textNode);
     if (overlappingBackground && "fills" in overlappingBackground) {
         const fills = overlappingBackground.fills;
@@ -85,13 +81,12 @@ function getBackgroundColor(textNode) {
                 return fill.color;
         }
     }
-    
     if ("fills" in parent && Array.isArray(parent.fills) && parent.fills.length > 0) {
         const fill = parent.fills[0];
         if (fill.type === "SOLID")
             return fill.color;
     }
-    return { r: 1, g: 1, b: 1 }; 
+    return { r: 1, g: 1, b: 1 };
 }
 function findAllTextNodes(node) {
     let textNodes = [];
@@ -105,10 +100,41 @@ function findAllTextNodes(node) {
     }
     return textNodes;
 }
-
+const filname = figma.root.name;
+console.log("FILNAME ", filname);
 figma.showUI(__html__, { width: 400, height: 1000 });
+// Send file name to UI when plugin opens
+figma.ui.postMessage({
+    type: 'file-name',
+    fileName: figma.root.name
+});
 figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    // Respond to explicit file name requests from UI
+    if (msg.type === 'get-file-name') {
+        figma.ui.postMessage({ type: 'file-name', fileName: figma.root.name });
+    }
+    if (msg.type === 'get-token') {
+        const token = yield figma.clientStorage.getAsync('token');
+        figma.ui.postMessage({ type: 'token-value', token });
+    }
+    if (msg.type === 'set-token') {
+        yield figma.clientStorage.setAsync('token', msg.token);
+    }
+    //  login with google auth start
+    if (msg.type === 'auth-success') {
+        figma.notify(`Authenticated as ${msg.userInfo.name}`);
+    }
+    // if (msg.type === 'create-rectangle') {
+    //   const rect = figma.createRectangle();
+    //   rect.resize(100, 100);
+    //   rect.x = Math.random() * 500;
+    //   rect.y = Math.random() * 500;
+    //   rect.fills = [{ type: 'SOLID', color: { r: Math.random(), g: Math.random(), b: Math.random() } }];
+    //   figma.currentPage.appendChild(rect);
+    //   figma.viewport.scrollAndZoomIntoView([rect]);
+    // }
+    //  login with google auth start
     if (msg.type === "scan-contrast") {
         const mode = msg.mode;
         let textNodes = [];
@@ -176,7 +202,6 @@ figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
             }
         }
     }
-  
     if (msg.type === "select-text") {
         const node = figma.getNodeById(msg.nodeId);
         if (node) {
@@ -184,7 +209,6 @@ figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
             figma.viewport.scrollAndZoomIntoView([node]);
         }
     }
-    
     if (msg.type === "apply-to-text") {
         console.log("Apply to Text button clicked");
         const selectedNode = figma.currentPage.selection[0];
@@ -211,7 +235,6 @@ figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
         ];
         console.log("Applying fills:", fills);
         selectedNode.fills = fills;
-       
         try {
             yield figma.loadFontAsync(selectedNode.fontName);
             const fills = selectedNode.fills;
@@ -233,7 +256,6 @@ figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
                 passAA: ratioValue >= 4.5,
                 passAAA: ratioValue >= 7
             };
-           
             figma.ui.postMessage({ type: "node-updated", result });
         }
         catch (e) {
@@ -256,11 +278,9 @@ figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
             figma.notify("Text node has no parent");
             return;
         }
-       
         const overlappingBackground = findBackgroundShape(parent, selectedNode);
         let success = false;
         if (overlappingBackground) {
-           
             overlappingBackground.fills = [{
                     type: "SOLID",
                     color: {
@@ -307,7 +327,6 @@ figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
                     passAA: ratioValue >= 4.5,
                     passAAA: ratioValue >= 7
                 };
-                
                 figma.ui.postMessage({ type: "node-updated", result });
             }
             catch (e) {
@@ -327,7 +346,6 @@ figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
             figma.notify("Node not found or not a text node");
             return;
         }
-       
         try {
             console.log("Rescanning node:", node.id, node.name);
             yield figma.loadFontAsync(node.fontName);
@@ -356,7 +374,6 @@ figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
                 passAAA: ratioValue >= 7
             };
             console.log("Sending rescanned result to UI:", result);
-          
             figma.ui.postMessage({ type: "node-rescanned", result });
             figma.notify("Results refreshed ✅");
         }
