@@ -1,4 +1,4 @@
-<UPDATED_CODE><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -473,12 +473,37 @@
 
   <div class="max-w-2xl mx-auto px-3 py-6">
     
+    <div class="flex items-center justify-end mb-4">
+      <button id="check-token-btn" class="px-3 py-1 ml-2 text-xs rounded bg-gray-200 hover:bg-gray-300" title="Check stored token">Check Token</button>
+      
+     <button id="upgrade-btn"
+  class="flex items-center px-4 py-2 ml-2 text-white rounded-md transition-all duration-300 shadow-md"
+  style="background-color: #FF600D; margin-top: -20px;"
+  title="Upgrade"
+  onmouseover="this.style.backgroundColor='#ff7a1a'"
+  onmouseout="this.style.backgroundColor='#FF600D'"
+>
+  <img src="https://res.cloudinary.com/dtsdaiqrp/image/upload/v1753581086/download-removebg-preview_i4onmf.png" 
+       alt="Upgrade Icon" 
+       class="w-5 h-5 invert"
+  />
+  <span class="text-sm font-bold">Upgrade</span>
+</button>
+
+      
+      <button id="profile-btn" class="p-1 ml-2 hover:bg-gray-100 rounded-full transition-colors " title="Profile" style="margin-top: -20px;">
+          <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4" stroke-width="2"/>
+            <path stroke-width="2" d="M4 20c0-4 4-7 8-7s8 3 8 7"/>
+          </svg>
+        </button>
+      </div>
+
     <div class="text-center mb-6">
-      <div class="inline-flex items-center justify-center w-12 h-12 bg-orange-50 rounded-xl mb-3">
-        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-        </svg>
+      <div class="inline-flex items-center justify-center  bg-orange-50 rounded-xl mb-3 mt-5">
+    
+        <img src="https://res.cloudinary.com/dtsdaiqrp/image/upload/v1753579068/ICON_vlmakw.png" alt="Company Logo" class="mx-auto w-16 h-16  border border-gray-200 bg-white" />
+      
       </div>
       <h1 class="text-2xl font-bold text-dark mb-2">Color Contrast Analyzer</h1>
       <p class="text-sm text-gray-600 max-w-md mx-auto">
@@ -575,18 +600,29 @@
   </div>
 
   <div id="detail-modal" class="modal">
-    <div class="px-4 py-3 border-b border-gray-100">
-      <div class="flex items-center justify-between">
+    <div class=" flex items-center justify-between px-4 py-3 border-b border-gray-100">
+      <div class="flex items-center gap-2">
+        <button onclick="closeModalAndRescanLayers()" class="p-1 hover:bg-gray-100 rounded-md transition-colors" style="margin-top: -20px;" >
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+         </button>
+      
         <div>
           <h3 class="text-base font-semibold text-dark">Contrast Details</h3>
           <p class="text-xs text-gray-500 mt-1">Adjust colors for accessibility</p>
         </div>
-        <button onclick="closeModalAndRescanLayers()" class="p-1 hover:bg-gray-100 rounded-md transition-colors">
-          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+       
+        </div>
+
+
+         <button id="profile-btn" class="p-1 ml-2 hover:bg-gray-100 rounded-full transition-colors " title="Profile" style="margin-top: -20px;">
+          <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4" stroke-width="2"/>
+            <path stroke-width="2" d="M4 20c0-4 4-7 8-7s8 3 8 7"/>
           </svg>
-        </button>
-      </div>
+         </button>
+        
     </div>
 
     <div class="px-4 py-3">
@@ -650,7 +686,89 @@
     </div>
   </div>
 
+  <div id="profile-modal" class="modal" style="display:none; max-width:400px; overflow-y:auto; margin-top:-5px; height:1500px; ">
+    <div class="px-4 py-3 border-b border-gray-100 flex items-center ">
+       <button id="profile-back-btn" class="p-1 hover:bg-gray-100 rounded-md transition-colors" title="Back">
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      
+      <div class="flex items-center gap-2">
+        <!-- <img src="https://your-company-logo-url.com/logo.png" alt="Company Logo" class="w-8 h-8 rounded-full border border-gray-200 bg-white" /> -->
+        <span class="font-semibold text-dark text-base">Profile</span>
+      </div>
+     
+    </div>
+    <div class="px-6 py-5 text-center">
+      <div class="mb-4">
+        <img src="https://res.cloudinary.com/dtsdaiqrp/image/upload/v1753579068/ICON_vlmakw.png" alt="Company Logo" class="mx-auto w-16 h-16  border border-gray-200 bg-white" />
+      </div>
+      <!-- <div class="mb-2 text-sm text-gray-500">Email</div> -->
+      <!-- <div id="profile-email" class="font-semibold text-dark mb-4">user@example.com</div> -->
+        <span id="current-user" class="font-semibold text-dark mb-4"></span>
+        <br>
+        <span id="current-user-email"  class="font-semibold text-dark mb-4"> </span>
+
+      <!-- <div class="mb-2 text-sm text-gray-500">Subscription</div> -->
+      <div id="profile-subscription" class="font-semibold text-primary mb-6">Pro</div>
+      <button id="dashboard-btn" class="apply-btn w-full mb-2">Dashboard</button>
+    </div>
+  </div>
+
+  <div id="login-modal" class="modal" style="display:none; max-width:400px; overflow-y:auto;  height:1500px;">
+  <div class="px-4 py-5 border-b border-gray-100 text-center" style="margin-top:120px;">
+    <img src="https://res.cloudinary.com/dtsdaiqrp/image/upload/v1753579068/ICON_vlmakw.png" alt="Company Logo" class="mx-auto w-16 h-16 border border-gray-200 bg-white  mb-2" />
+    <h2 class="text-lg font-bold text-dark mt-2 mb-1">Welcome</h2>
+    <p class="text-sm text-gray-500 mb-2">Sign in to continue</p>
+  </div>
+  <div class="px-6 py-6 text-center">
+    <button style='background-color: #000; color:#fff' id="loginButton" class="apply-btn w-full box-shadow mb-3 flex items-center justify-center gap-2">
+      <img src="https://res.cloudinary.com/dtsdaiqrp/image/upload/v1753585541/transparent-google-logo-flat-google-logo-with-blue-green-red-1710875585155-removebg-preview_baj2q6.png" alt="Google" class="w-5 h-5" />
+      Login with Google
+    </button>
+
+    <div id="status" style="margin-top:10px; color: #333; font-size: 13px; display:none;"></div>
+<div id="error" style="margin-top:10px; color: #dc2626; font-size: 13px; display:none;"></div>
+<div id="userInfo" style="margin-top:10px; color: #333; font-size: 13px; display:none;"></div>
+
+ 
+</div>
+
+
+
+    <button id="login" class="apply-btn w-full mb-2">Login with Email</button>
+    <div class="mt-4 text-xs text-gray-500">
+      Don't have an account?
+      <a href="#" id="signup-link" class="text-primary font-semibold hover:underline">Sign up</a>
+    </div>
+  </div>
+</div>
+
   <script>
+    let currentUser = "UserName";
+    let currentSubscription = "Pro"; // or "Free"
+    let currentEmail = "user@example.com";
+
+    // Add event listener for Check Token button
+    document.addEventListener('DOMContentLoaded', function() {
+      const checkTokenBtn = document.getElementById('check-token-btn');
+      if (checkTokenBtn) {
+        checkTokenBtn.addEventListener('click', function() {
+          parent.postMessage({ pluginMessage: { type: 'debug-token' } }, '*');
+        });
+      }
+    });
+
+    // Listen for token-value response and show in UI
+    window.addEventListener('message', function(event) {
+      const msg = event.data.pluginMessage;
+      if (msg && msg.type === 'token-value') {
+        let token = msg.token || '';
+        showMessage('Stored token: ' + (token ? token : 'None'), 'info');
+      }
+    });
+
     const tbody = document.querySelector("#results tbody");
     const msgDiv = document.getElementById("message");
     const searchInput = document.getElementById("search");
@@ -1427,6 +1545,59 @@
       );
     }
 
+    // Example user data (replace with real data if available)
+    const userProfile = {
+      email: "user@example.coom",
+      subscription: "Pro"
+    };
+
+    // Set profile info on modal open
+    function openProfileModal() {
+  //document.getElementById("profile-email").textContent = userProfile.email;
+  // Append currentUser
+  const currentUserSpan = document.getElementById("current-user");
+  const currentEmailSpan = document.getElementById("current-user-email");
+  
+  if (currentUserSpan) {
+    currentUserSpan.textContent = `${currentUser}`;
+  }
+
+  if (currentEmailSpan) {
+    currentEmailSpan.textContent = `${currentEmail}`;
+  }
+
+  document.getElementById("profile-subscription").textContent = userProfile.subscription;
+  document.getElementById("profile-modal").style.display = "block";
+}
+    // Hide profile modal
+    function closeProfileModal() {
+      document.getElementById("profile-modal").style.display = "none";
+    }
+
+    // Profile icon click (add event listener after DOM loaded)
+    document.getElementById("profile-btn").addEventListener("click", function(e) {
+      e.stopPropagation();
+      openProfileModal();
+    });
+
+    // Back button closes profile modal
+    document.getElementById("profile-back-btn").addEventListener("click", function() {
+      closeProfileModal();
+    });
+
+    // Dashboard button opens external page
+    document.getElementById("dashboard-btn").addEventListener("click", function() {
+      window.open("https://www.hunain.com/dashboard", "_blank");
+    });
+
+    // Optional: Close profile modal when clicking outside
+    document.addEventListener("click", function(event) {
+      const modal = document.getElementById("profile-modal");
+      if (modal.style.display === "block" && !modal.contains(event.target) && event.target.id !== "profile-btn") {
+        closeProfileModal();
+      }
+    });
+
     window.addEventListener('focus', function() {
       if (colorPickerOpenState) {
         setTimeout(() => {
@@ -1457,6 +1628,488 @@
       }
     });
 
+    // Show login modal on load, hide main UI until login
+  function showLoginModal() {
+    document.getElementById("login-modal").style.display = "block";
+    document.querySelector(".max-w-2xl").style.display = "none";
+    document.getElementById("detail-modal").style.display = "none";
+    document.getElementById("profile-modal").style.display = "none";
+  }
+  function hideLoginModal() {
+    document.getElementById("login-modal").style.display = "none";
+    document.querySelector(".max-w-2xl").style.display = "";
+  }
+
+  // Simulate login (replace with real auth logic)
+ // document.getElementById("loginButton").onclick = function() {
+    // TODO: Integrate Google login
+   // hideLoginModal();
+  ///};
+  //document.getElementById("login-email-btn").onclick = function() {
+   //  TODO: Integrate Email login;
+    // hideLoginModal();
+  //};
+  document.getElementById("signup-link").onclick = function(e) {
+    e.preventDefault();
+    // TODO: Integrate signup or redirect
+    alert("Signup not implemented in this demo.");
+  };
+
+  // Prevent closing login modal by clicking outside
+  document.getElementById("login-modal").addEventListener("click", function(e) {
+    e.stopPropagation();
+  });
+
+  // Show login modal first on load
+  window.addEventListener("DOMContentLoaded", function() {
+    showLoginModal();
+  });
+
+
   </script>
+  <!--  Login with google script -->
+   <script>
+    const SERVER_URL = 'https://fluffy-space-fiesta-w4xppw65w7gcgw75-3000.app.github.dev';
+    let isAuthenticating = false;
+    let pollingInterval = null;
+    let sessionId = null;
+    let authTimeout = null;
+
+    function generateSessionId() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    function setStatus(message, isError = false) {
+      const status = document.getElementById('status');
+      const error = document.getElementById('error');
+      status.textContent = message;
+      if (isError) {
+        error.textContent = message;
+        error.style.display = 'block';
+        status.style.display = 'none';
+        
+      } else {
+        error.style.display = 'none';
+        status.style.display = 'block';
+        
+      }
+    }
+
+    function setUserInfo(name, email) {
+      const userInfo = document.getElementById('userInfo');
+      userInfo.innerHTML = `Name: ${name}<br>Email: ${email}`;
+      userInfo.style.display = 'block';
+     
+    }
+
+    function startPolling() {
+      if (pollingInterval) {
+        console.log('Polling already active');
+        return;
+      }
+      pollingInterval = setInterval(async () => {
+        try {
+          console.log('Polling /auth/check with sessionId:', sessionId);
+          const response = await fetch(`${SERVER_URL}/auth/check?sessionId=${encodeURIComponent(sessionId)}`, {
+            method: 'GET',
+            credentials: 'include'
+          });
+          console.log('Fetch response:', { status: response.status, ok: response.ok });
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log('Auth check data:', data);
+          if (data.authenticated) {
+            clearInterval(pollingInterval);
+            clearTimeout(authTimeout);
+            pollingInterval = null;
+            authTimeout = null;
+            setStatus('✅ Authenticated');
+            hideLoginModal();
+            setUserInfo(data.userInfo.name, data.userInfo.email);
+            currentUser = data.userInfo.name;
+            currentEmail = data.userInfo.email;
+            
+
+
+            parent.postMessage({
+              pluginMessage: {
+                type: 'auth-success',
+                token: data.token,
+                userInfo: data.userInfo
+              }
+            }, '*');
+            if (data.token) {
+              parent.postMessage({
+                pluginMessage: {
+                  type: 'set-token',
+                  token: data.token
+                }
+              }, '*');
+            }
+            try {
+              const cleanupResponse = await fetch(`${SERVER_URL}/auth/cleanup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId }),
+                credentials: 'include'
+              });
+              console.log('Cleanup response:', await cleanupResponse.json());
+            } catch (cleanupError) {
+              console.error('Cleanup error:', cleanupError);
+            }
+          } else {
+            setStatus('Authenticating...');
+            if (data.message === 'Session expired or invalid sessionId') {
+              clearInterval(pollingInterval);
+              pollingInterval = null;
+             
+            }
+          }
+        } catch (error) {}
+      }, 2000);
+    }
+
+    document.getElementById('loginButton').addEventListener('click', async () => {
+      if (isAuthenticating) {
+        console.log('Authentication already in progress');
+        return;
+      }
+      isAuthenticating = true;
+      sessionId = generateSessionId();
+      setStatus('Authenticating...');
+      try {
+        console.log('Attempting to open auth window:', `${SERVER_URL}/auth/google?origin=null&sessionId=${sessionId}`);
+        const authWindow = window.open(`${SERVER_URL}/auth/google?origin=null&sessionId=${sessionId}`, '_blank');
+        if (!authWindow) {
+          console.error('window.open returned null');
+         
+        } else {
+          console.log('Auth window opened successfully');
+          const windowCheck = setInterval(() => {
+            if (authWindow.closed) {
+              console.log('Auth window closed by user');
+              clearInterval(windowCheck);
+              if (!sessionId) {
+                isAuthenticating = false;
+              
+              }
+            }
+          }, 1000);
+        }
+        startPolling();
+        authTimeout = setTimeout(() => {
+          if (sessionId) {
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+            isAuthenticating = false;
+            
+          }
+        }, 60000); // 60 seconds timeout
+      } catch (error) {
+        console.error('Error opening auth window:', error);
+        isAuthenticating = false;
+        setStatus('Error opening authentication window: ' + error.message, true);
+        
+      }
+    });
+
+  
+
+   
+    window.addEventListener('message', (event) => {
+      console.log('Received message:', event);
+      if (event.data?.type === 'auth-completed' && event.data.writeKey) {
+        console.log('Received auth-completed with writeKey:', event.data.writeKey);
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+        clearTimeout(authTimeout);
+        authTimeout = null;
+        sessionId = null;
+        setStatus('Authenticating...');
+        fetch(`${SERVER_URL}/auth/check?writeKey=${encodeURIComponent(event.data.writeKey)}`, {
+          method: 'GET',
+          credentials: 'include'
+        })
+          .then(response => {
+            console.log('Fetch response:', { status: response.status, ok: response.ok });
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('Auth check data:', data);
+            if (data.authenticated) {
+              setStatus('✅ Authenticated');
+              setUserInfo(data.userInfo.name, data.userInfo.email);
+              currentUser = data.userInfo.name
+              currentEmail = data.userInfo.email
+              parent.postMessage({
+                pluginMessage: {
+                  type: 'auth-success',
+                  token: data.token,
+                  userInfo: data.userInfo
+                }
+              }, '*');
+              if (data.token) {
+                parent.postMessage({
+                  pluginMessage: {
+                    type: 'set-token',
+                    token: data.token
+                  }
+                }, '*');
+              }
+              fetch(`${SERVER_URL}/auth/cleanup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ writeKey: event.data.writeKey }),
+                credentials: 'include'
+              })
+                .then(res => res.json())
+                .then(data => console.log('Cleanup response:', data))
+                .catch(err => console.error('Cleanup error:', err));
+            } 
+          })
+          .catch(error => {
+            console.error('postMessage auth error:', error);
+           
+          });
+      } else if (event.data.pluginMessage?.type === 'auth-cleared') {
+        console.log('Received auth-cleared message');
+        isAuthenticating = false;
+        sessionId = null;
+        clearInterval(pollingInterval);
+        clearTimeout(authTimeout);
+        pollingInterval = null;
+        authTimeout = null;
+        setStatus('Not authenticated');
+        document.getElementById('userInfo').style.display = 'none';
+        
+        
+
+
+      }
+    }, false);
+  </script>
+  
+  <!-- shan login with email code -->
+  <script>
+
+   
+
+
+
+// In your polling function, after successful login, add a console.log for the data:
+document.getElementById('login').addEventListener('click', async () => {
+  if (isAuthenticating) {
+    console.log('Authentication already in progress');
+    return;
+  }
+  isAuthenticating = true;
+  sessionId = generateSessionId();
+  setStatus('Authenticating...');
+  try {
+    console.log('Attempting to open auth window:', `${SERVER_URL}/auth/google?origin=null&sessionId=${sessionId}`);
+    const authWindow = window.open(`http://localhost:3000/login?sessionId=${sessionId}`, '_blank');
+    if (!authWindow) {
+      console.error('window.open returned null');
+      setStatus('Authentication window opened, but tracking failed. Complete login in browser and enter the write key if prompted.', true);
+      //document.getElementById('writeKeyInput').style.display = 'flex';
+    } else {
+      console.log('Auth window opened successfully');
+      // const windowCheck = setInterval(() => {
+      //   if (authWindow.closed) {
+      //     console.log('Auth window closed by user');
+      //     clearInterval(windowCheck);
+      //     if (!sessionId) {
+      //       isAuthenticating = false;
+      //       setStatus('Authentication window closed. Please enter the write key from the browser or retry.', true);
+      //       document.getElementById('writeKeyInput').style.display = 'flex';
+      //     }
+      //   }
+      // }, 1000);
+    }
+    startPollings();
+    authTimeout = setTimeout(() => {
+      if (sessionId) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+        isAuthenticating = false;
+        setStatus('Authentication taking too long. Please enter the write key from the browser or retry.', true);
+        //document.getElementById('writeKeyInput').style.display = 'flex';
+      }
+    }, 60000); // 60 seconds timeout
+  } catch (error) {
+    console.error('Error opening auth window:', error);
+    isAuthenticating = false;
+    setStatus('Error opening authentication window: ' + error.message, true);
+    // document.getElementById('writeKeyInput').style.display = 'flex';
+  }
+});
+
+window.addEventListener('message', (event) => {
+  const msg = event.data.pluginMessage;
+  if (msg?.type === 'file-name') {
+    console.log('✅ File name received:', msg.fileName);
+    window.figmaFileName = msg.fileName;
+    startPollings(); // ✅ Call after you have file name
+  }
+});
+
+function startPollings() {
+  if (window.__pollingActive) {
+    console.log('Polling already active');
+    return;
+  }
+  window.__pollingActive = true;
+  let localPollingInterval = setInterval(async () => {
+    try {
+      console.log('Polling /auth/check with sessionId:', sessionId);
+      const response = await fetch(`https://craftmymenus.com/FigmaLaravel/public/api/polling-data?sessionId=${encodeURIComponent(sessionId)}`, {
+        method: 'GET', credentials: 'include'
+      });
+      console.log('Fetch response:', { ok: response });
+      const data = await response.json();
+      console.log('Auth check data:', data);
+
+      if (data.authenticated && data.userInfo) {
+        clearInterval(localPollingInterval);
+        clearTimeout(authTimeout);
+        window.__pollingActive = false;
+        authTimeout = null;
+        setStatus('✅ Authenticated');
+        hideLoginModal();
+        setUserInfo(data.userInfo.name, data.userInfo.email);
+        currentUser = data.userInfo.name;
+        currentEmail = data.userInfo.email;
+
+        // Update profile modal fields if open
+        const currentUserSpan = document.getElementById("current-user");
+        const currentEmailSpan = document.getElementById("current-user-email");
+        if (currentUserSpan) currentUserSpan.textContent = currentUser;
+        if (currentEmailSpan) currentEmailSpan.textContent = currentEmail;
+
+        parent.postMessage({
+          pluginMessage: {
+            type: 'auth-success',
+            token: data.token,
+            userInfo: data.userInfo
+          }
+        }, '*');
+
+        console.log('Login successful, user data:', data);
+        let currentToken = data.token;
+        console.log('Current token:', currentToken);
+        // Set token in clientStorage after login
+        if (currentToken) {
+          parent.postMessage({ pluginMessage: { type: 'set-token', token: currentToken } }, '*');
+        }
+  
+        // Call check-file API after login, only one token listener at a time
+       const tokenListener = async function(event) {
+    if (event.data.pluginMessage?.type === 'token-value') {
+    const token = event.data.pluginMessage.token;
+
+    console.log('Received token:', token);
+    window.removeEventListener('message', tokenListener);
+    
+    window.addEventListener('message', (event) => {
+  const msg = event.data.pluginMessage;
+  if (msg?.type === 'file-name') {
+    console.log('✅ Received file name:', msg.fileName);
+    window.figmaFileName = msg.fileName; // Make it available globally
+  }
+});
+
+console.log('📩 Received message from main plugin:', event.data);
+
+
+
+
+    
+
+
+    try {
+    const fileName = window?.figmaFileName ?? 'UnknownFileName';
+
+      console.log(fileName)
+      const checkFileResponse = await fetch(`https://craftmymenus.com/FigmaLaravel/public/api/check-file`, {
+        method: 'POST',
+        'headers': {
+  'Content-Type': 'application/json',
+  'Authorization': `Bearer ${token}`
+},
+        body: JSON.stringify({
+          name: 'Contrast', 
+          file_name: fileName ?? 'name',
+        })
+      });
+      let checkFileResult;
+      let isJson = true;
+      try {
+        checkFileResult = await checkFileResponse.json();
+      } catch (jsonErr) {
+        isJson = false;
+        checkFileResult = `Response not JSON: ${jsonErr.message}`;
+      }
+      if (!checkFileResponse.ok) {
+        let errorMsg = isJson
+          ? (checkFileResult && checkFileResult.message ? checkFileResult.message : JSON.stringify(checkFileResult))
+          : checkFileResult;
+        showMessage('File check failed: ' + errorMsg, 'error');
+        if (isJson) {
+          console.error('check-file API error (JSON):', checkFileResult);
+        } else {
+          console.error('check-file API error (non-JSON):', checkFileResult);
+        }
+      } else {
+        if (isJson) {
+          console.log('check-file API result:', checkFileResult);
+        } else {
+          console.log('check-file API result (non-JSON):', checkFileResult);
+        }
+      }
+    } catch (checkFileError) {
+      console.error('check-file API error:', checkFileError);
+    }
+  }
+};
+        window.addEventListener('message', tokenListener);
+        parent.postMessage({ pluginMessage: { type: 'get-token' } }, '*');
+
+        try {
+          const cleanupResponse = await fetch(`${SERVER_URL}/auth/cleanup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId }),
+            credentials: 'include'
+          });
+          console.log('Cleanup response:', await cleanupResponse.json());
+        } catch (cleanupError) {
+          console.error('Cleanup error:', cleanupError);
+        }
+      } else {
+        setStatus('Authenticating...');
+        if (data.message === 'Session expired or invalid sessionId') {
+          clearInterval(localPollingInterval);
+          window.__pollingActive = false;
+          setStatus('Authentication failed. Please enter the write key from the browser or retry.', true);
+          const writeKeyInput = document.getElementById('writeKeyInput');
+          if (writeKeyInput) writeKeyInput.style.display = 'flex';
+        }
+      }
+    } catch (error) {
+      // Optionally handle polling error
+    }
+  }, 2000);
+}
+    
+  </script>
+
 </body>
 </html>
