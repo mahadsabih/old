@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "lib": ["esnext"],
+    "types": ["@figma/plugin-typings"],
+    "strict": true,
+    "outDir": "build"
+  },
+  "include": ["code.ts"]
+}

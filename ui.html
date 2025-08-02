@@ -1,0 +1,1462 @@
+<UPDATED_CODE><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Contrast Analyzer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FE6C00',
+            'primary-hover': '#E55A00',
+            'primary-light': '#FFF4ED',
+            dark: '#0C0101',
+          },
+          fontFamily: {
+            'inter': ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #FFFFFF;
+      color: #0C0101;
+      line-height: 1.5;
+    }
+
+    /* MODAL STYLING */
+    .modal {
+      position: fixed;
+      top: 0px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      padding: 0;
+      z-index: 999;
+      width: 100%;
+      max-width: 500px;
+      max-height: 98vh;
+      overflow-y: scroll;
+      display: none;
+    }
+
+    /* GROUP 1: COLOR CONTROLS STYLING */
+    .color-controls-group {
+      background: #FFFFFF;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .color-controls-group h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0C0101;
+      margin: 0 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .color-controls-group h3::before {
+      content: "🎨";
+      font-size: 16px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .color-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .color-control label {
+      font-weight: 600;
+      color: #0C0101;
+      font-size: 14px;
+      min-width: 28px;
+      flex-shrink: 0;
+    }
+
+    .color-control input[type="color"] {
+      width: 36px;
+      height: 28px;
+      border: 2px solid #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+    }
+
+    .color-control input[type="text"] {
+      flex: 1;
+      padding: 6px 8px;
+      font-size: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-family: 'SF Mono', Monaco, monospace;
+      background: white;
+      min-width: 0;  
+      max-width: 80px;
+    }
+
+    .color-control input[type="text"]:focus {
+      outline: none;
+      border-color: #FE6C00;
+      box-shadow: 0 0 0 2px rgba(254, 108, 0, 0.1);
+    }
+
+    /* GROUP 2: PREVIEW & ANALYSIS STYLING */
+    .preview-analysis-group {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      transition: transform 0.3s ease, margin-top 0.3s ease;
+      transform: translateY(0);
+    }
+
+    /* Sliding animation classes - DIFFERENT DISTANCES FOR FG vs BG */
+    .preview-analysis-group.slide-down-fg {
+      transform: translateY(90px);
+      margin-top: 90px;
+    }
+
+    .preview-analysis-group.slide-down-bg {
+      transform: translateY(120px);
+      margin-top: 120px;
+    }
+
+    .preview-analysis-group h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0C0101;
+      margin: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preview-analysis-group h3::before {
+      content: "📊";
+      font-size: 16px;
+    }
+
+    .color-preview {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .color-box {
+      flex: 1;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .contrast-value {
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      margin: 12px 0 4px;
+      color: #0C0101;
+    }
+
+    .contrast-label {
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .check-marks {
+      display: flex;
+      justify-content: space-around;
+      font-size: 12px;
+      margin: 16px 0;
+      padding: 12px;
+      background: #f9fafb;
+      border-radius: 8px;
+    }
+
+    .check-marks > div {
+      text-align: center;
+    }
+
+    .check-marks b {
+      color: #0C0101;
+      font-weight: 600;
+    }
+
+    .scale {
+      display: flex;
+      gap: 2px;
+      margin: 12px 0;
+    }
+
+    .scale div {
+      flex: 1;
+      height: 24px;
+      border-radius: 4px;
+      border: 1px solid #e5e7eb;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .scale div:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .scale-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #0C0101;
+      margin: 12px 0 8px 0;
+    }
+
+    .modal-footer {
+      margin-top: 16px;
+      padding: 16px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .apply-btn {
+      background: #FE6C00;
+      color: white;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 1px 3px rgba(254, 108, 0, 0.2);
+    }
+
+    .apply-btn:hover {
+      background: #E55A00;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(254, 108, 0, 0.3);
+    }
+
+    .close-btn {
+      background: #f3f4f6;
+      color: #0C0101;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      background: #e5e7eb;
+    }
+
+    .suggestions-section {
+      margin-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 16px;
+    }
+
+    .suggestions-section h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+      color: #0C0101;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 12px;
+      background: #f3f4f6;
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 4px 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 4px;
+      transition: all 0.2s;
+      color: #6b7280;
+    }
+
+    .tab-btn.active {
+      background: #FE6C00;
+      color: white;
+      box-shadow: 0 1px 2px rgba(254, 108, 0, 0.2);
+    }
+
+    .suggestion-container {
+      display: none;
+    }
+
+    .suggestion-container.active {
+      display: block;
+    }
+
+    .suggestion-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .color-suggestion {
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s;
+    }
+
+    .color-suggestion:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      border-color: #FE6C00;
+    }
+
+    .color-suggestion .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #374151;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      z-index: 10;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .color-suggestion:hover .tooltip {
+      opacity: 1;
+    }
+
+    .suggestion-label {
+      font-size: 11px;
+      color: #6b7280;
+      text-align: center;
+      margin: 12px 0;
+      font-weight: 500;
+    }
+
+    /* RESULT CARD STYLING */
+    .result-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .result-card:hover {
+      border-color: #FE6C00;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .result-card.pass {
+      border-left: 3px solid #10b981;
+    }
+
+    .result-card.fail {
+      border-left: 3px solid #ef4444;
+    }
+
+    /* FILTER BUTTON STYLING */
+    .filter-btn {
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .filter-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-btn.active {
+      border-color: #FE6C00;
+      box-shadow: 0 2px 8px rgba(254, 108, 0, 0.2);
+    }
+
+    /* HIDDEN RESULTS TABLE */
+    #results {
+      display: none;
+    }
+
+    /* ERROR MESSAGE STYLING */
+    .message-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin: 8px 0;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    /* Clear button styling */
+    #clear-search {
+      transition: opacity 0.2s ease;
+    }
+
+    #clear-search.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #clear-search:hover svg {
+      color: #6b7280;
+    }
+
+    /* Adjust search input padding when clear button is visible */
+    #search:not(:placeholder-shown) {
+      padding-right: 2.5rem;
+    }
+  </style>
+</head>
+<body class="bg-white">
+
+  <div class="max-w-2xl mx-auto px-3 py-6">
+    
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-12 h-12 bg-orange-50 rounded-xl mb-3">
+        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-dark mb-2">Color Contrast Analyzer</h1>
+      <p class="text-sm text-gray-600 max-w-md mx-auto">
+        Scan text layers and ensure WCAG accessibility compliance with intelligent color suggestions.
+      </p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+      
+      <div class="mb-4">
+        <label class="block text-sm font-semibold text-dark mb-3">Scan Mode</label>
+        <div class="bg-gray-50 p-1 rounded-lg inline-flex space-x-1">
+          <label class="mode-option-label px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-white text-primary shadow-sm cursor-pointer border border-primary whitespace-nowrap">
+            <input type="radio" name="mode" value="all" checked class="hidden" />
+            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H5m14 14H5"></path>
+            </svg>
+            All Text Layers
+          </label>
+          <label class="mode-option-label px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-dark hover:bg-white cursor-pointer border border-transparent hover:border-gray-200 whitespace-nowrap">
+            <input type="radio" name="mode" value="selected" class="hidden" />
+            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Selected Only
+          </label>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button id="scan" class="bg-primary hover:bg-primary-hover text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-sm hover:shadow-md text-sm">
+          <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <span class="scan-text">Start Scan</span>
+        </button>
+        
+        <div class="flex-1 relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <input type="text" id="search" placeholder="Search text or font..." 
+                 class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-100 focus:border-primary transition-all duration-200 bg-gray-50 focus:bg-white text-sm">
+          <button id="clear-search" class="absolute inset-y-0 right-0 pr-3 flex items-center opacity-0 pointer-events-none transition-opacity duration-200">
+            <svg class="h-4 w-4 text-gray-400 hover:text-gray-600 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="message" class="hidden"></div>
+
+    <div id="results-section" class="hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-dark">Results</h2>
+        <div class="flex gap-2">
+          <div class="bg-gray-100 px-2 py-0.5 rounded-full filter-btn active" id="filter-all" data-filter="all">
+            <span class="text-sm font-medium text-gray-700" id="results-count">0 items</span>
+          </div>
+          <div class="bg-green-100 px-3 py-0.5 rounded-full filter-btn" id="filter-passed" data-filter="passed">
+            <span class="text-sm font-medium text-green-800" id="passed-count">0 passed</span>
+          </div>
+          <div class="bg-red-100 px-3 py-0.5 rounded-full filter-btn" id="filter-failed" data-filter="failed">
+            <span class="text-sm font-medium text-red-800" id="failed-count">0 failed</span>
+          </div>
+        </div>
+      </div>
+      
+      <div id="results-container" class="space-y-3">
+      </div>
+    </div>
+
+    <div id="empty-state" class="text-center py-12">
+    </div>
+
+    <table id="results" style="display: none;">
+      <thead>
+        <tr>
+          <th>Text</th>
+          <th>Font</th>
+          <th>FG</th>
+          <th>BG</th>
+          <th>Ratio</th>
+          <th>AA</th>
+          <th>AAA</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="detail-modal" class="modal">
+    <div class="px-4 py-3 border-b border-gray-100">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-semibold text-dark">Contrast Details</h3>
+          <p class="text-xs text-gray-500 mt-1">Adjust colors for accessibility</p>
+        </div>
+        <button onclick="closeModalAndRescanLayers()" class="p-1 hover:bg-gray-100 rounded-md transition-colors">
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="px-4 py-3">
+      
+      <div class="color-controls-group">
+        
+        <div class="input-group">
+          <div class="color-control">
+            <label>FG:</label>
+            <input type="color" id="modal-fg" />
+            <input type="text" id="modal-fg-hex" placeholder="#000000" />
+          </div>
+          <div class="color-control">
+            <label>BG:</label>
+            <input type="color" id="modal-bg" />
+            <input type="text" id="modal-bg-hex" placeholder="#FFFFFF" />
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-analysis-group" id="preview-analysis-group">
+        
+        
+        <div class="color-preview">
+          <div id="preview-box" class="color-box">Sample Text</div>
+        </div>
+
+        <div class="contrast-value" id="contrast-ratio">--</div>
+        <div class="contrast-label">Contrast Ratio (WCAG)</div>
+
+        <div class="check-marks" id="check-marks"></div>
+
+        <div class="scale-label">Foreground Scale:</div>
+        <div class="scale" id="scale-bar-fg"></div>
+
+        <div class="scale-label">Background Scale:</div>
+        <div class="scale" id="scale-bar-bg"></div>
+
+        <div class="suggestions-section">
+          <h4>Color Suggestions</h4>
+          <div class="tabs">
+            <button class="tab-btn active" data-target="fg-suggestions">Foreground</button>
+            <button class="tab-btn" data-target="bg-suggestions">Background</button>
+          </div>
+          
+          <div id="fg-suggestions" class="suggestion-container active">
+            <div class="suggestion-grid" id="fg-suggestion-grid"></div>
+          </div>
+          
+          <div id="bg-suggestions" class="suggestion-container">
+            <div class="suggestion-grid" id="bg-suggestion-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="apply-btn" id="apply-color">Apply Text</button>
+      <button class="apply-btn" id="apply-bg">Apply BG</button>
+      <button class="close-btn" onclick="closeModalAndRescanLayers()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const tbody = document.querySelector("#results tbody");
+    const msgDiv = document.getElementById("message");
+    const searchInput = document.getElementById("search");
+    const resultsSection = document.getElementById("results-section");
+    const resultsContainer = document.getElementById("results-container");
+    const resultsCount = document.getElementById("results-count");
+    const passedCount = document.getElementById("passed-count");
+    const failedCount = document.getElementById("failed-count");
+    const emptyState = document.getElementById("empty-state");
+
+    let currentResults = [];
+    let scannedLayerIds = [];
+    let currentEditingNodeId = null;
+    let currentFilter = 'all'; 
+    let colorPickerOpenState = false;
+    let colorPickerCheckInterval = null;
+
+    function slideGroup2DownForFG() {
+      console.log("Sliding Group 2 down for FG picker (200px)");
+      const group2 = document.getElementById('preview-analysis-group');
+      if (group2) {
+        group2.classList.remove('slide-down-bg'); 
+        group2.classList.add('slide-down-fg');
+      }
+    }
+
+    function slideGroup2DownForBG() {
+      console.log("Sliding Group 2 down for BG picker (300px)");
+      const group2 = document.getElementById('preview-analysis-group');
+      if (group2) {
+        group2.classList.remove('slide-down-fg'); 
+        group2.classList.add('slide-down-bg');
+      }
+    }
+
+    function slideGroup2Up() {
+      console.log("Sliding Group 2 up");
+      const group2 = document.getElementById('preview-analysis-group');
+      if (group2) {
+        group2.classList.remove('slide-down-fg');
+        group2.classList.remove('slide-down-bg');
+      }
+    }
+    function startColorPickerMonitoring() {
+      colorPickerOpenState = true;
+      
+      if (colorPickerCheckInterval) {
+        clearInterval(colorPickerCheckInterval);
+      }
+      
+
+      colorPickerCheckInterval = setInterval(() => {
+
+        const fgPicker = document.getElementById('modal-fg');
+        const bgPicker = document.getElementById('modal-bg');
+        
+        const isAnyPickerFocused = document.activeElement === fgPicker || 
+                                  document.activeElement === bgPicker;
+        
+
+        if (!isAnyPickerFocused && colorPickerOpenState) {
+          console.log("Color picker appears to be closed, sliding up");
+          slideGroup2Up();
+          colorPickerOpenState = false;
+          clearInterval(colorPickerCheckInterval);
+        }
+      }, 100);
+    }
+
+
+    function stopColorPickerMonitoring() {
+      colorPickerOpenState = false;
+      if (colorPickerCheckInterval) {
+        clearInterval(colorPickerCheckInterval);
+        colorPickerCheckInterval = null;
+      }
+    }
+
+    function setupColorPickerListeners() {
+      console.log("Setting up color picker listeners");
+      
+      const fgColorPicker = document.getElementById('modal-fg');
+      const bgColorPicker = document.getElementById('modal-bg');
+      
+      if (fgColorPicker) {
+        console.log("FG color picker found, adding listeners");
+        
+        fgColorPicker.addEventListener('click', (e) => {
+          console.log("FG color picker clicked");
+          slideGroup2DownForFG(); 
+          startColorPickerMonitoring();
+        });
+        
+        fgColorPicker.addEventListener('change', (e) => {
+          console.log("FG color picker changed - dialog likely closed");
+          setTimeout(() => {
+            slideGroup2Up();
+            stopColorPickerMonitoring();
+          }, 150);
+        });
+        
+        fgColorPicker.addEventListener('blur', (e) => {
+          console.log("FG color picker blurred");
+          setTimeout(() => {
+            slideGroup2Up();
+            stopColorPickerMonitoring();
+          }, 150);
+        });
+      }
+      
+      if (bgColorPicker) {
+        console.log("BG color picker found, adding listeners");
+        
+        bgColorPicker.addEventListener('click', (e) => {
+          console.log("BG color picker clicked");
+          slideGroup2DownForBG(); 
+          startColorPickerMonitoring();
+        });
+        
+        bgColorPicker.addEventListener('change', (e) => {
+          console.log("BG color picker changed - dialog likely closed");
+          setTimeout(() => {
+            slideGroup2Up();
+            stopColorPickerMonitoring();
+          }, 150);
+        });
+        
+        bgColorPicker.addEventListener('blur', (e) => {
+          console.log("BG color picker blurred");
+          setTimeout(() => {
+            slideGroup2Up();
+            stopColorPickerMonitoring();
+          }, 150);
+        });
+      }
+    }
+
+    document.querySelectorAll('input[name="mode"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        document.querySelectorAll('.mode-option-label').forEach(label => {
+          label.classList.remove('bg-white', 'text-primary', 'shadow-sm', 'border-primary');
+          label.classList.add('text-gray-600', 'hover:text-dark', 'hover:bg-white', 'border-transparent', 'hover:border-gray-200');
+        });
+        
+        const selectedLabel = this.closest('.mode-option-label');
+        selectedLabel.classList.add('bg-white', 'text-primary', 'shadow-sm', 'border-primary');
+        selectedLabel.classList.remove('text-gray-600', 'hover:text-dark', 'hover:bg-white', 'border-transparent', 'hover:border-gray-200');
+      });
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const filter = this.getAttribute('data-filter');
+        setActiveFilter(filter);
+        applyCurrentFilters();
+      });
+    });
+
+    function setActiveFilter(filter) {
+      currentFilter = filter;
+      
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+    }
+
+    function applyCurrentFilters() {
+      let filteredResults = [...currentResults];
+      
+      const searchTerm = searchInput.value.toLowerCase();
+      if (searchTerm) {
+        filteredResults = filteredResults.filter(
+          (r) => r.text.toLowerCase().includes(searchTerm) || r.font.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      if (currentFilter === 'passed') {
+        filteredResults = filteredResults.filter(r => r.passAA);
+      } else if (currentFilter === 'failed') {
+        filteredResults = filteredResults.filter(r => !r.passAA);
+      }
+      
+      renderResults(filteredResults, true); 
+    }
+
+    document.getElementById("scan").onclick = () => {
+      clearSearch();
+      
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      parent.postMessage(
+        { pluginMessage: { type: "scan-contrast", mode } },
+        "*"
+      );
+    };
+
+    function showModal(data) {
+      currentEditingNodeId = data.id;
+      document.getElementById("modal-fg").value = data.fg;
+      document.getElementById("modal-bg").value = data.bg;
+      document.getElementById("detail-modal").setAttribute("data-node-id", data.id);
+      updateModalUI();
+      document.getElementById("detail-modal").style.display = "block";
+      
+      setTimeout(() => {
+        setupColorPickerListeners();
+      }, 100);
+      
+      parent.postMessage(
+        { pluginMessage: { type: "select-text", nodeId: data.id } },
+        "*"
+      );
+    }
+
+    onmessage = (event) => {
+      const message = event.data.pluginMessage;
+      if (message.type === "no-selection") {
+        showMessage("Please select at least one text layer.", "error");
+      } else if (message.type === "results") {
+        currentResults = message.results;
+        scannedLayerIds = message.results.map(result => result.id);
+        currentFilter = 'all';  
+        setActiveFilter('all');
+        renderResults(currentResults);
+        hideMessage();
+      } else if (message.type === "node-rescanned") {
+        const updatedResult = message.result;
+        const index = currentResults.findIndex(r => r.id === updatedResult.id);
+        if (index !== -1) {
+          currentResults[index] = updatedResult;
+          applyCurrentFilters();  
+        }
+      } else if (message.type === "node-updated") {
+        const updatedResult = message.result;
+        const index = currentResults.findIndex(r => r.id === updatedResult.id);
+        if (index !== -1) {
+          currentResults[index] = updatedResult;
+          applyCurrentFilters();
+        }
+      }
+    };
+
+    function showMessage(text, type = "error") {
+      msgDiv.innerHTML = `<div class="message-error">${text}</div>`;
+      msgDiv.classList.remove("hidden");
+    }
+
+    function hideMessage() {
+      msgDiv.classList.add("hidden");
+    }
+
+    function renderResults(results, updateCounts = true) {
+      if (results.length === 0 && currentResults.length === 0) {
+        resultsSection.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+        return;
+      }
+
+      emptyState.classList.add("hidden");
+      resultsSection.classList.remove("hidden");
+      
+      if (updateCounts) {
+        const totalCount = currentResults.length;
+        const passedCountNum = currentResults.filter(r => r.passAA).length;
+        const failedCountNum = currentResults.filter(r => !r.passAA).length;
+        
+        resultsCount.textContent = `${totalCount} items`;
+        passedCount.textContent = `${passedCountNum} passed`;
+        failedCount.textContent = `${failedCountNum} failed`;
+      }
+
+      resultsContainer.innerHTML = "";
+      
+      if (results.length === 0 && currentResults.length > 0) {
+        resultsContainer.innerHTML = `
+          <div class="text-center py-8">
+            <div class="text-gray-500 text-sm">No items match the current filter</div>
+          </div>
+        `;
+        return;
+      }
+      
+      results.forEach(result => {
+        const card = document.createElement("div");
+        card.className = `result-card ${result.passAA ? 'pass' : 'fail'}`;
+        card.onclick = () => showModal(result);
+        
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex-1 min-w-0">
+              <h3 class="text-sm font-semibold text-dark mb-1 truncate">${result.text}</h3>
+              <p class="text-xs text-gray-600 truncate">${result.font}</p>
+            </div>
+            <div class="text-right ml-3">
+              <div class="text-lg font-bold text-dark">${result.ratio}:1</div>
+              <div class="text-xs text-gray-500">Ratio</div>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-4 mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-5 h-5 rounded border border-gray-200" style="background-color: ${result.fg}"></div>
+              <div>
+                <div class="text-xs text-gray-500">FG</div>
+                <div class="text-xs font-mono">${result.fg}</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <div class="w-5 h-5 rounded border border-gray-200" style="background-color: ${result.bg}"></div>
+              <div>
+                <div class="text-xs text-gray-500">BG</div>
+                <div class="text-xs font-mono">${result.bg}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex gap-2">
+            <span class="px-2 py-1 rounded text-xs font-medium ${result.passAA ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+              AA ${result.passAA ? '✅' : '❌'}
+            </span>
+            <span class="px-2 py-1 rounded text-xs font-medium ${result.passAAA ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+              AAA ${result.passAAA ? '✅' : '❌'}
+            </span>
+          </div>
+        `;
+        
+        resultsContainer.appendChild(card);
+      });
+      tbody.innerHTML = "";
+      for (const r of results) {
+        const row = document.createElement("tr");
+        row.className = r.passAA ? "pass-aa" : "fail";
+        row.innerHTML = `
+          <td>${r.text}</td>
+          <td>${r.font}</td>
+          <td><span class="swatch" style="background-color: ${r.fg}"></span>${r.fg}</td>
+          <td><span class="swatch" style="background-color: ${r.bg}"></span>${r.bg}</td>
+          <td>${r.ratio}</td>
+          <td>${r.passAA ? "✅" : "❌"}</td>
+          <td>${r.passAAA ? "✅" : "❌"}</td>
+        `;
+        row.onclick = () => showModal(r);
+        tbody.appendChild(row);
+      }
+    }
+
+    const clearSearchBtn = document.getElementById("clear-search");
+
+    function clearSearch() {
+      searchInput.value = "";
+      clearSearchBtn.classList.remove("show");
+      applyCurrentFilters(); 
+      searchInput.focus(); 
+    }
+
+    
+    function toggleClearButton() {
+      if (searchInput.value.trim() !== "") {
+        clearSearchBtn.classList.add("show");
+      } else {
+        clearSearchBtn.classList.remove("show");
+      }
+    }
+
+
+    clearSearchBtn.addEventListener("click", clearSearch);
+
+   
+    searchInput.addEventListener("input", () => {
+      toggleClearButton();
+      applyCurrentFilters();
+    });
+
+    searchInput.addEventListener("focus", toggleClearButton);
+
+    searchInput.addEventListener("blur", () => {
+      if (searchInput.value.trim() === "") {
+        clearSearchBtn.classList.remove("show");
+      }
+    });
+
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        clearSearch();
+      }
+    });
+
+    function updateModalUI() {
+      const fg = document.getElementById("modal-fg").value;
+      const bg = document.getElementById("modal-bg").value;
+
+      document.getElementById("modal-fg-hex").value = fg;
+      document.getElementById("modal-bg-hex").value = bg;
+
+      const contrast = getContrastRatio(fg, bg);
+      const ratio = contrast.toFixed(2);
+
+      document.getElementById("preview-box").style.backgroundColor = bg;
+      document.getElementById("preview-box").style.color = fg;
+      document.getElementById("contrast-ratio").textContent = `${ratio}:1`;
+
+      const check = document.getElementById("check-marks");
+      check.innerHTML = `
+        <div>
+          <b>Normal Text</b><br/>
+          AA ${contrast >= 4.5 ? "✅" : "❌"}<br/>
+          AAA ${contrast >= 7 ? "✅" : "❌"}
+        </div>
+        <div>
+          <b>Large Text</b><br/>
+          AA ${contrast >= 3 ? "✅" : "❌"}<br/>
+          AAA ${contrast >= 4.5 ? "✅" : "❌"}
+        </div>
+      `;
+
+      updateScaleBar(fg, "fg");
+      updateScaleBar(bg, "bg");
+      generateColorSuggestions();
+    }
+
+    function updateScaleBar(color, type) {
+      const scaleBar = document.getElementById(`scale-bar-${type}`);
+      scaleBar.innerHTML = "";
+
+      const rgb = hexToRgb(color);
+
+      for (let i = 0; i <= 10; i++) {
+        const val = i / 10;
+        const r = Math.round(rgb.r * 255 * val);
+        const g = Math.round(rgb.g * 255 * val);
+        const b = Math.round(rgb.b * 255 * val);
+        const div = document.createElement("div");
+        div.style.backgroundColor = `rgb(${r},${g},${b})`;
+        div.onclick = () => {
+          document.getElementById(`modal-${type}`).value = rgbToHex(r, g, b);
+          updateModalUI();
+        };
+        scaleBar.appendChild(div);
+      }
+
+      for (let i = 0; i <= 10; i++) {
+        const val = i / 10;
+        const r = Math.round(rgb.r * 255 + (255 - rgb.r * 255) * val);
+        const g = Math.round(rgb.g * 255 + (255 - rgb.g * 255) * val);
+        const b = Math.round(rgb.b * 255 + (255 - rgb.b * 255) * val);
+        const div = document.createElement("div");
+        div.style.backgroundColor = `rgb(${r},${g},${b})`;
+        div.onclick = () => {
+          document.getElementById(`modal-${type}`).value = rgbToHex(r, g, b);
+          updateModalUI();
+        };
+        scaleBar.appendChild(div);
+      }
+    }
+
+    function rgbToHex(r, g, b) {
+      return (
+        "#" +
+        [r, g, b]
+          .map((x) => {
+            const hex = Math.round(x).toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+          })
+          .join("")
+      );
+    }
+
+    document.getElementById("modal-fg").addEventListener("input", updateModalUI);
+    document.getElementById("modal-bg").addEventListener("input", updateModalUI);
+    
+    document.getElementById("modal-fg-hex").addEventListener("input", (e) => {
+      document.getElementById("modal-fg").value = e.target.value;
+      updateModalUI();
+    });
+
+    document.getElementById("modal-bg-hex").addEventListener("input", (e) => {
+      document.getElementById("modal-bg").value = e.target.value;
+      updateModalUI();
+    });
+
+    document.getElementById("apply-color").onclick = () => {
+      const fgColor = document.getElementById("modal-fg").value;
+      const rgb = hexToRgb(fgColor);
+      const nodeId = document.getElementById("detail-modal").getAttribute("data-node-id");
+      
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: "apply-to-text",
+            color: rgb,
+            nodeId: nodeId
+          },
+        },
+        "*"
+      );
+    };
+
+    document.getElementById("apply-bg").onclick = () => {
+      const bgColor = document.getElementById("modal-bg").value;
+      const rgb = hexToRgb(bgColor);
+      const nodeId = document.getElementById("detail-modal").getAttribute("data-node-id");
+      
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: "apply-bg-to-text",
+            color: rgb,
+            nodeId: nodeId
+          },
+        },
+        "*"
+      );
+    };
+
+    function hexToRgb(hex) {
+      const r = parseInt(hex.slice(1, 3), 16) / 255;
+      const g = parseInt(hex.slice(3, 5), 16) / 255;
+      const b = parseInt(hex.slice(5, 7), 16) / 255;
+      return { r, g, b };
+    }
+
+    function luminanceVal(r, g, b) {
+      const a = [r, g, b].map((v) => {
+        v = v / 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+    }
+
+    function hexToRgbObj(hex) {
+      const res = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return res
+        ? {
+            r: parseInt(res[1], 16),
+            g: parseInt(res[2], 16),
+            b: parseInt(res[3], 16),
+          }
+        : { r: 0, g: 0, b: 0 };
+    }
+
+    function getContrastRatio(fg, bg) {
+      const c1 = hexToRgbObj(fg);
+      const c2 = hexToRgbObj(bg);
+      const L1 = luminanceVal(c1.r, c1.g, c1.b);
+      const L2 = luminanceVal(c2.r, c2.g, c2.b);
+      return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.suggestion-container').forEach(container => container.classList.remove('active'));
+
+        button.classList.add('active');
+        const target = button.getAttribute('data-target');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+
+    function generateColorSuggestions() {
+      const fg = document.getElementById("modal-fg").value;
+      const bg = document.getElementById("modal-bg").value;
+      
+      generateForegroundSuggestions(bg);
+      generateBackgroundSuggestions(fg);
+    }
+
+    function generateForegroundSuggestions(bgColor) {
+      const container = document.getElementById('fg-suggestion-grid');
+      container.innerHTML = '';
+      
+      const suggestions = [];
+      
+      const baseColors = [
+        '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF',
+        '#FFFF00', '#FF00FF', '#00FFFF', '#FF5500', '#5500FF',
+        '#00FF55', '#FF0055', '#55FF00', '#0055FF'
+      ];
+      
+      for (const color of baseColors) {
+        const contrast = getContrastRatio(color, bgColor);
+        if (contrast >= 7) {
+          suggestions.push({
+            color: color,
+            contrast: contrast
+          });
+        }
+      }
+      
+      const hueStep = 30;
+      for (let h = 0; h < 360; h += hueStep) {
+        for (let s = 100; s >= 20; s -= 20) {
+          for (let l = 0; l <= 100; l += 10) {
+            const color = hslToHex(h, s, l);
+            const contrast = getContrastRatio(color, bgColor);
+      
+            if (contrast >= 7 && !suggestions.some(s => s.color === color)) {
+              suggestions.push({
+                color: color,
+                contrast: contrast
+              });
+              
+              if (suggestions.length >= 20) break;
+            }
+          }
+          if (suggestions.length >= 20) break;
+        }
+        if (suggestions.length >= 20) break;
+      }
+      
+      suggestions.sort((a, b) => b.contrast - a.contrast);
+      
+      suggestions.slice(0, 20).forEach(suggestion => {
+        const div = document.createElement('div');
+        div.className = 'color-suggestion';
+        div.style.backgroundColor = suggestion.color;
+        div.innerHTML = `<span class="tooltip">${suggestion.color} (${suggestion.contrast.toFixed(2)}:1)</span>`;
+        div.onclick = () => {
+          document.getElementById('modal-fg').value = suggestion.color;
+          updateModalUI();
+        };
+        container.appendChild(div);
+      });
+      
+      if (suggestions.length === 0) {
+        container.innerHTML = '<p class="suggestion-label">No suggestions found that meet all requirements.</p>';
+      }
+    }
+
+    function generateBackgroundSuggestions(fgColor) {
+      const container = document.getElementById('bg-suggestion-grid');
+      container.innerHTML = '';
+      
+      const suggestions = [];
+      
+      const baseColors = [
+        '#000000', '#FFFFFF', '#EEEEEE', '#DDDDDD', '#CCCCCC',
+        '#222222', '#333333', '#444444', '#555555', '#666666',
+        '#F5F5F5', '#F0F0F0', '#E0E0E0', '#111111'
+      ];
+      
+      for (const color of baseColors) {
+        const contrast = getContrastRatio(fgColor, color);
+        if (contrast >= 7) {
+          suggestions.push({
+            color: color,
+            contrast: contrast
+          });
+        }
+      }
+      
+      const hueStep = 30;
+      for (let h = 0; h < 360; h += hueStep) {
+        for (let s = 0; s <= 40; s += 10) {
+          for (let l = 0; l <= 100; l += 10) {
+            const color = hslToHex(h, s, l);
+            const contrast = getContrastRatio(fgColor, color);
+      
+            if (contrast >= 7 && !suggestions.some(s => s.color === color)) {
+              suggestions.push({
+                color: color,
+                contrast: contrast
+              });
+              
+              if (suggestions.length >= 20) break;
+            }
+          }
+          if (suggestions.length >= 20) break;
+        }
+        if (suggestions.length >= 20) break;
+      }
+      
+      suggestions.sort((a, b) => b.contrast - a.contrast);
+      
+      suggestions.slice(0, 20).forEach(suggestion => {
+        const div = document.createElement('div');
+        div.className = 'color-suggestion';
+        div.style.backgroundColor = suggestion.color;
+        div.innerHTML = `<span class="tooltip">${suggestion.color} (${suggestion.contrast.toFixed(2)}:1)</span>`;
+        div.onclick = () => {
+          document.getElementById('modal-bg').value = suggestion.color;
+          updateModalUI();
+        };
+        container.appendChild(div);
+      });
+      
+      if (suggestions.length === 0) {
+        container.innerHTML = '<p class="suggestion-label">No suggestions found that meet all requirements.</p>';
+      }
+    }
+
+    // HSL TO HEX CONVERSION
+    function hslToHex(h, s, l) {
+      h /= 360;
+      s /= 100;
+      l /= 100;
+      
+      let r, g, b;
+      
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q - p) * 6 * t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
+        };
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+      
+      const toHex = x => {
+        const hex = Math.round(x * 255).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      };
+      
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape' && colorPickerOpenState) {
+        console.log("Escape pressed while color picker open");
+        slideGroup2Up();
+        stopColorPickerMonitoring();
+      }
+    });
+
+    document.addEventListener('click', function(event) {
+      const modal = document.getElementById('detail-modal');
+      const fgPicker = document.getElementById('modal-fg');
+      const bgPicker = document.getElementById('modal-bg');
+      
+      if (modal && !modal.contains(event.target) && colorPickerOpenState) {
+        console.log("Click outside modal while color picker open");
+        slideGroup2Up();
+        stopColorPickerMonitoring();
+      }
+      
+      if (modal && modal.contains(event.target) && 
+          event.target !== fgPicker && event.target !== bgPicker && 
+          colorPickerOpenState) {
+        setTimeout(() => {
+          if (!document.activeElement || 
+              (document.activeElement !== fgPicker && document.activeElement !== bgPicker)) {
+            console.log("Click inside modal, color picker likely closed");
+            slideGroup2Up();
+            stopColorPickerMonitoring();
+          }
+        }, 100);
+      }
+    });
+
+    function closeModalAndRescanLayers() {
+      document.getElementById('detail-modal').style.display = 'none';
+      
+      slideGroup2Up();
+      stopColorPickerMonitoring();
+      
+      const editedNodeId = document.getElementById('detail-modal').getAttribute('data-node-id');
+      
+      parent.postMessage(
+        { pluginMessage: { type: "rescan-node", nodeId: editedNodeId } },
+        "*"
+      );
+    }
+
+    window.addEventListener('focus', function() {
+      if (colorPickerOpenState) {
+        setTimeout(() => {
+          const fgPicker = document.getElementById('modal-fg');
+          const bgPicker = document.getElementById('modal-bg');
+          
+          if (document.activeElement !== fgPicker && document.activeElement !== bgPicker) {
+            console.log("Window focus regained, color picker likely closed");
+            slideGroup2Up();
+            stopColorPickerMonitoring();
+          }
+        }, 200);
+      }
+    });
+
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible' && colorPickerOpenState) {
+        setTimeout(() => {
+          const fgPicker = document.getElementById('modal-fg');
+          const bgPicker = document.getElementById('modal-bg');
+          
+          if (document.activeElement !== fgPicker && document.activeElement !== bgPicker) {
+            console.log("Tab became visible, color picker likely closed");
+            slideGroup2Up();
+            stopColorPickerMonitoring();
+          }
+        }, 200);
+      }
+    });
+
+  </script>
+</body>
+</html>

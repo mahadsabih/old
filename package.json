@@ -1,0 +1,14 @@
+{
+  "name": "Figs Contrast",
+  "version": "1.0.0",
+  "description": "A Figma plugin to check WCAG 2.1 color contrast ratios for text.",
+  "main": "build/code.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.64.0",
+    "typescript": "^5.3.3"
+  }
+}
