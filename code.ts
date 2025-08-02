@@ -1,4 +1,3 @@
-
 function luminance(rgb: RGB): number {
   const toLinear = (c: number) =>
     c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
@@ -111,10 +110,47 @@ function findAllTextNodes(node: SceneNode): TextNode[] {
   return textNodes;
 }
 
-
+const filname = figma.root.name;
+console.log("FILNAME " , filname)
 figma.showUI(__html__, { width: 400, height: 1000 });
+// Send file name to UI when plugin opens
+figma.ui.postMessage({
+  type: 'file-name',
+  fileName: figma.root.name
+});
 
 figma.ui.onmessage = async (msg) => {
+  // Respond to explicit file name requests from UI
+  if (msg.type === 'get-file-name') {
+    figma.ui.postMessage({ type: 'file-name', fileName: figma.root.name });
+  }
+  if (msg.type === 'get-token') {
+    const token = await figma.clientStorage.getAsync('token');
+    figma.ui.postMessage({ type: 'token-value', token });
+  }
+
+  if (msg.type === 'set-token') {
+    await figma.clientStorage.setAsync('token', msg.token);
+  }
+
+  //  login with google auth start
+  if (msg.type === 'auth-success') {
+    figma.notify(`Authenticated as ${msg.userInfo.name}`);
+  }
+
+  // if (msg.type === 'create-rectangle') {
+  //   const rect = figma.createRectangle();
+  //   rect.resize(100, 100);
+  //   rect.x = Math.random() * 500;
+  //   rect.y = Math.random() * 500;
+  //   rect.fills = [{ type: 'SOLID', color: { r: Math.random(), g: Math.random(), b: Math.random() } }];
+  //   figma.currentPage.appendChild(rect);
+  //   figma.viewport.scrollAndZoomIntoView([rect]);
+  // }
+  //  login with google auth start
+
+
+
   if (msg.type === "scan-contrast") {
     const mode = msg.mode;
     let textNodes: TextNode[] = [];
@@ -402,4 +438,5 @@ figma.ui.onmessage = async (msg) => {
       console.warn(`Error rescanning node ${nodeId}:`, e);
       figma.notify("Error refreshing results ❌");
     }
-  }}   
+  }
+}
